@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import MobileNavigation from "@/components/layout/mobile-navigation";
+
 const navigationItems = [
   {
     label: "สินค้า",
@@ -29,7 +31,7 @@ const navigationItems = [
 
 export default function SiteHeader() {
   return (
-    <header className="border-b-2 border-brand-dark bg-white">
+    <header className="relative z-50 border-b-2 border-brand-dark bg-white">
       <div className="mx-auto flex min-h-24 max-w-7xl items-center justify-between gap-8 px-6">
         <Link
           href="/"
@@ -72,6 +74,8 @@ export default function SiteHeader() {
             ขอใบเสนอราคา
           </Link>
         </nav>
+
+        <MobileNavigation items={navigationItems} />
       </div>
     </header>
   );

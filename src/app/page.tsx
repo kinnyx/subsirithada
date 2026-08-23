@@ -1,3 +1,4 @@
+import SiteFooter from "@/components/layout/site-footer";
 import SiteHeader from "@/components/layout/site-header";
 
 export default function Home() {
@@ -38,6 +39,7 @@ export default function Home() {
             <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
               <div className="border border-brand-dark">
                 <div className="h-36 bg-brand-primary" />
+
                 <div className="bg-white p-4">
                   <p className="font-semibold">Primary Blue</p>
                   <p className="mt-1 font-mono text-sm">#1f52a5</p>
@@ -46,6 +48,7 @@ export default function Home() {
 
               <div className="border border-brand-dark">
                 <div className="h-36 bg-brand-accent" />
+
                 <div className="bg-white p-4">
                   <p className="font-semibold">Accent Gold</p>
                   <p className="mt-1 font-mono text-sm">#e9a93a</p>
@@ -54,6 +57,7 @@ export default function Home() {
 
               <div className="border border-brand-dark">
                 <div className="h-36 bg-brand-dark" />
+
                 <div className="bg-white p-4">
                   <p className="font-semibold">Dark</p>
                   <p className="mt-1 font-mono text-sm">#201e1d</p>
@@ -62,6 +66,7 @@ export default function Home() {
 
               <div className="border border-brand-dark">
                 <div className="h-36 bg-brand-light" />
+
                 <div className="bg-white p-4">
                   <p className="font-semibold">Light Background</p>
                   <p className="mt-1 font-mono text-sm">#f3f2f2</p>
@@ -71,6 +76,8 @@ export default function Home() {
           </section>
         </div>
       </main>
+
+      <SiteFooter />
     </>
   );
 }

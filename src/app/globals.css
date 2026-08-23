@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+@theme {
+  --color-brand-primary: #1f52a5;
+  --color-brand-accent: #e9a93a;
+  --color-brand-dark: #201e1d;
+  --color-brand-light: #f3f2f2;
+}
+
 *,
 *::before,
 *::after {

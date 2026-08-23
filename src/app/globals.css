@@ -7,6 +7,11 @@
   --color-brand-light: #f3f2f2;
 }
 
+@theme inline {
+  --font-sans: var(--font-noto-sans-thai);
+  --font-display: var(--font-archivo);
+}
+
 *,
 *::before,
 *::after {

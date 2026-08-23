@@ -1,4 +1,5 @@
 import HomeHero from "@/components/home/home-hero";
+import HomeProductSearch from "@/components/home/home-product-search";
 import SiteFooter from "@/components/layout/site-footer";
 import SiteHeader from "@/components/layout/site-header";
 
@@ -9,6 +10,7 @@ export default function Home() {
 
       <main>
         <HomeHero />
+        <HomeProductSearch />
       </main>
 
       <SiteFooter />

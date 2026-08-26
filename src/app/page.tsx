@@ -1,3 +1,4 @@
+import HomeBrands from "@/components/home/home-brands";
 import HomeCategories from "@/components/home/home-categories";
 import HomeCompanyStrength from "@/components/home/home-company-strength";
 import HomeFeaturedProducts from "@/components/home/home-featured-products";
@@ -19,6 +20,7 @@ export default function Home() {
         <HomeFeaturedProducts />
         <HomeServices />
         <HomeCompanyStrength />
+        <HomeBrands />
       </main>
 
       <SiteFooter />

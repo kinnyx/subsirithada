@@ -35,6 +35,20 @@ const products = [
         value: "DC10WD",
       },
     ],
+    documents: [
+      {
+        type: "Manual",
+        title: "คู่มือการใช้งาน",
+        fileName: "CLX224X1-manual.pdf",
+        description: "คู่มือการใช้งานเครื่องมือภายในชุด",
+      },
+      {
+        type: "Catalog",
+        title: "แคตตาล็อกสินค้า",
+        fileName: "CLX224X1-catalog.pdf",
+        description: "ข้อมูลผลิตภัณฑ์และรายละเอียดของชุดเครื่องมือ",
+      },
+    ],
   },
   {
     brand: "MAKITA",
@@ -62,6 +76,20 @@ const products = [
       {
         label: "ลักษณะงาน",
         value: "งานเจาะคอนกรีต",
+      },
+    ],
+    documents: [
+      {
+        type: "Manual",
+        title: "คู่มือการใช้งาน",
+        fileName: "HR166DZX1-manual.pdf",
+        description: "คู่มือการใช้งานและข้อควรระวัง",
+      },
+      {
+        type: "Technical PDF",
+        title: "ข้อมูลทางเทคนิค",
+        fileName: "HR166DZX1-technical.pdf",
+        description: "ข้อมูลทางเทคนิคและรายละเอียดผลิตภัณฑ์",
       },
     ],
   },
@@ -93,6 +121,26 @@ const products = [
         value: "ตัวเปล่า",
       },
     ],
+    documents: [
+      {
+        type: "Manual",
+        title: "คู่มือการใช้งาน",
+        fileName: "DHP485Z-manual.pdf",
+        description: "คู่มือการใช้งานและข้อควรระวังของสินค้า",
+      },
+      {
+        type: "Catalog",
+        title: "แคตตาล็อกสินค้า",
+        fileName: "DHP485Z-catalog.pdf",
+        description: "ข้อมูลผลิตภัณฑ์สำหรับใช้อ้างอิง",
+      },
+      {
+        type: "Technical PDF",
+        title: "ข้อมูลทางเทคนิค",
+        fileName: "DHP485Z-technical.pdf",
+        description: "ข้อมูลสเปกและรายละเอียดทางเทคนิคของรุ่น",
+      },
+    ],
   },
   {
     brand: "MAKITA",
@@ -116,6 +164,20 @@ const products = [
       {
         label: "ลักษณะงาน",
         value: "งานเจียรและตัด",
+      },
+    ],
+    documents: [
+      {
+        type: "Manual",
+        title: "คู่มือการใช้งาน",
+        fileName: "GA4031-manual.pdf",
+        description: "คู่มือการใช้งานเครื่องเจียรอย่างถูกต้อง",
+      },
+      {
+        type: "Catalog",
+        title: "แคตตาล็อกสินค้า",
+        fileName: "GA4031-catalog.pdf",
+        description: "รายละเอียดและข้อมูลผลิตภัณฑ์",
       },
     ],
   },
@@ -142,6 +204,20 @@ const products = [
       {
         label: "ในกล่อง",
         value: "ตัวเปล่า",
+      },
+    ],
+    documents: [
+      {
+        type: "Manual",
+        title: "คู่มือการใช้งาน",
+        fileName: "DVC750LZX1-manual.pdf",
+        description: "คู่มือการใช้งานและการดูแลรักษา",
+      },
+      {
+        type: "Technical PDF",
+        title: "ข้อมูลทางเทคนิค",
+        fileName: "DVC750LZX1-technical.pdf",
+        description: "รายละเอียดทางเทคนิคสำหรับใช้อ้างอิง",
       },
     ],
   },
@@ -445,7 +521,84 @@ export default async function ProductDetailPage({
           </div>
         </section>
 
-        <section className="bg-white">
+        <section className="border-b-2 border-brand-dark bg-white">
+          <div className="mx-auto max-w-7xl px-6 py-12 sm:py-14 lg:py-16">
+            <div className="grid gap-8 lg:grid-cols-[0.65fr_1.35fr] lg:gap-12">
+              <div>
+                <p className="font-display text-xs font-bold uppercase tracking-[0.22em] text-brand-primary">
+                  Documents
+                </p>
+
+                <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-brand-dark sm:text-4xl">
+                  คู่มือและเอกสาร
+                </h2>
+
+                <p className="mt-4 max-w-md text-sm leading-7 text-brand-dark/60">
+                  เอกสารสำหรับใช้อ้างอิงข้อมูลสินค้า
+                  การใช้งาน และรายละเอียดทางเทคนิค
+                </p>
+
+                <div className="mt-6 border-l-4 border-brand-accent pl-4">
+                  <p className="text-xs leading-6 text-brand-dark/50">
+                    ตอนนี้รายการเอกสารเป็น Mock Data
+                    และยังไม่มีไฟล์จริงสำหรับดาวน์โหลด
+                  </p>
+                </div>
+              </div>
+
+              <div className="border-l-2 border-t-2 border-brand-dark">
+                {product.documents.map((document, index) => (
+                  <article
+                    key={`${document.type}-${document.fileName}`}
+                    className={`grid gap-5 border-b-2 border-r-2 border-brand-dark p-5 sm:grid-cols-[80px_1fr_auto] sm:items-center sm:p-6 ${
+                      index % 2 === 0 ? "bg-brand-light" : "bg-white"
+                    }`}
+                  >
+                    <div className="flex h-16 w-16 items-center justify-center border-2 border-brand-dark bg-white">
+                      <span className="font-display text-xs font-extrabold uppercase tracking-[0.12em] text-brand-primary">
+                        PDF
+                      </span>
+                    </div>
+
+                    <div>
+                      <p className="font-display text-[10px] font-bold uppercase tracking-[0.16em] text-brand-primary">
+                        {document.type}
+                      </p>
+
+                      <h3 className="mt-2 text-lg font-bold text-brand-dark">
+                        {document.title}
+                      </h3>
+
+                      <p className="mt-2 text-sm leading-6 text-brand-dark/60">
+                        {document.description}
+                      </p>
+
+                      <p className="mt-3 font-display text-[10px] font-semibold tracking-[0.08em] text-brand-dark/40">
+                        {document.fileName}
+                      </p>
+                    </div>
+
+                    <div className="sm:text-right">
+                      <span className="inline-flex border-2 border-brand-dark/25 bg-white px-4 py-3 text-xs font-bold text-brand-dark/45">
+                        ยังไม่มีไฟล์จริง
+                      </span>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-6 border-2 border-dashed border-brand-dark/25 bg-brand-light p-5">
+              <p className="text-xs leading-6 text-brand-dark/50">
+                เมื่อระบบ Media Management และ Product Document พร้อม
+                ปุ่มดาวน์โหลดจะเชื่อมกับไฟล์จริงที่ผู้ดูแลระบบอัปโหลด
+                โดยไม่สร้าง URL หรือเอกสารตัวอย่างปลอมขึ้นมาในขั้นตอนนี้
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-brand-light">
           <div className="mx-auto max-w-7xl px-6 py-10">
             <div className="border-l-4 border-brand-accent pl-5">
               <p className="font-display text-xs font-bold uppercase tracking-[0.18em] text-brand-primary">
@@ -453,9 +606,8 @@ export default async function ProductDetailPage({
               </p>
 
               <p className="mt-2 max-w-3xl text-sm leading-7 text-brand-dark/60">
-                คู่มือและเอกสารดาวน์โหลด, FAQ
-                และสินค้าที่เกี่ยวข้องจะพัฒนาแยกทีละ Step
-                หลังส่วน Specifications ผ่านการตรวจสอบแล้ว
+                FAQ และสินค้าที่เกี่ยวข้องจะพัฒนาแยกทีละ Step
+                หลังส่วน Product Documents ผ่านการตรวจสอบแล้ว
               </p>
             </div>
           </div>

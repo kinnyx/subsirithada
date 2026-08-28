@@ -49,6 +49,18 @@ const products = [
         description: "ข้อมูลผลิตภัณฑ์และรายละเอียดของชุดเครื่องมือ",
       },
     ],
+    faqs: [
+      {
+        question: "ชุดนี้มีเครื่องมืออะไรบ้าง?",
+        answer:
+          "ข้อมูล Mock Data ของหน้านี้ระบุชุดเครื่องมือ DF333DZ และ TD110DZ พร้อมแบตเตอรี่ 12Vmax 1.5Ah จำนวน 2 ก้อน และแท่นชาร์จ DC10WD",
+      },
+      {
+        question: "สามารถขอราคาเป็นจำนวนหลายชุดได้หรือไม่?",
+        answer:
+          "สามารถระบุจำนวนที่ต้องการในส่วนขอใบเสนอราคาได้ โดยราคาจริงจะได้รับการยืนยันจากทีมงานในใบเสนอราคา",
+      },
+    ],
   },
   {
     brand: "MAKITA",
@@ -90,6 +102,18 @@ const products = [
         title: "ข้อมูลทางเทคนิค",
         fileName: "HR166DZX1-technical.pdf",
         description: "ข้อมูลทางเทคนิคและรายละเอียดผลิตภัณฑ์",
+      },
+    ],
+    faqs: [
+      {
+        question: "รุ่นนี้รองรับดอกประเภทใด?",
+        answer:
+          "ข้อมูล Mock Data ของหน้านี้ระบุว่ารองรับระบบดอก SDS-PLUS",
+      },
+      {
+        question: "เหมาะกับลักษณะงานแบบใด?",
+        answer:
+          "ข้อมูลเบื้องต้นใน Mock Data ระบุไว้สำหรับงานเจาะคอนกรีต โดยรายละเอียดการใช้งานจริงควรตรวจสอบจากคู่มือและข้อมูลผู้ผลิตอีกครั้ง",
       },
     ],
   },
@@ -141,6 +165,23 @@ const products = [
         description: "ข้อมูลสเปกและรายละเอียดทางเทคนิคของรุ่น",
       },
     ],
+    faqs: [
+      {
+        question: "รุ่นนี้มาพร้อมแบตเตอรี่หรือไม่?",
+        answer:
+          "ข้อมูล Mock Data ของหน้านี้ระบุว่าเป็นตัวเปล่า ดังนั้นรายละเอียดอุปกรณ์ที่รวมจริงควรตรวจสอบอีกครั้งในใบเสนอราคาและข้อมูลสินค้าก่อนสั่งซื้อ",
+      },
+      {
+        question: "ระบบไฟของรุ่นนี้เป็นเท่าไร?",
+        answer:
+          "ข้อมูล Specification ที่ใช้ในหน้าตัวอย่างนี้ระบุระบบไฟ 18V",
+      },
+      {
+        question: "สามารถระบุจำนวนก่อนขอราคาได้หรือไม่?",
+        answer:
+          "ได้ สามารถระบุจำนวนในกล่อง Request for Quotation แล้วส่งต่อไปยังหน้าใบขอราคาได้",
+      },
+    ],
   },
   {
     brand: "MAKITA",
@@ -178,6 +219,18 @@ const products = [
         title: "แคตตาล็อกสินค้า",
         fileName: "GA4031-catalog.pdf",
         description: "รายละเอียดและข้อมูลผลิตภัณฑ์",
+      },
+    ],
+    faqs: [
+      {
+        question: "ขนาดใบที่แสดงในหน้านี้เท่าไร?",
+        answer:
+          "ข้อมูล Mock Specification ของสินค้ารุ่นนี้ระบุขนาดใบ 4 นิ้ว",
+      },
+      {
+        question: "สินค้ารุ่นนี้จัดอยู่ในงานประเภทใด?",
+        answer:
+          "ข้อมูลตัวอย่างของหน้านี้จัดไว้สำหรับงานเจียรและตัด โดยการเลือกอุปกรณ์และการใช้งานจริงควรอ้างอิงคู่มือของผู้ผลิต",
       },
     ],
   },
@@ -218,6 +271,18 @@ const products = [
         title: "ข้อมูลทางเทคนิค",
         fileName: "DVC750LZX1-technical.pdf",
         description: "รายละเอียดทางเทคนิคสำหรับใช้อ้างอิง",
+      },
+    ],
+    faqs: [
+      {
+        question: "รุ่นนี้ใช้ระบบแบตเตอรี่เท่าไร?",
+        answer:
+          "ข้อมูล Mock Data ของหน้านี้ระบุระบบแบตเตอรี่ 18V",
+      },
+      {
+        question: "ภายในกล่องมีแบตเตอรี่หรือไม่?",
+        answer:
+          "ข้อมูล Mock Specification ระบุว่าเป็นตัวเปล่า รายละเอียดอุปกรณ์ที่รวมจริงต้องยืนยันอีกครั้งจากข้อมูลสินค้าและใบเสนอราคา",
       },
     ],
   },
@@ -573,7 +638,7 @@ export default async function ProductDetailPage({
                         {document.description}
                       </p>
 
-                      <p className="mt-3 font-display text-[10px] font-semibold tracking-[0.08em] text-brand-dark/40">
+                      <p className="mt-3 break-all font-display text-[10px] font-semibold tracking-[0.08em] text-brand-dark/40">
                         {document.fileName}
                       </p>
                     </div>
@@ -598,7 +663,75 @@ export default async function ProductDetailPage({
           </div>
         </section>
 
-        <section className="bg-brand-light">
+        <section className="border-b-2 border-brand-dark bg-brand-light">
+          <div className="mx-auto max-w-7xl px-6 py-12 sm:py-14 lg:py-16">
+            <div className="grid gap-8 lg:grid-cols-[0.65fr_1.35fr] lg:gap-12">
+              <div>
+                <p className="font-display text-xs font-bold uppercase tracking-[0.22em] text-brand-primary">
+                  FAQ
+                </p>
+
+                <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-brand-dark sm:text-4xl">
+                  คำถามที่พบบ่อย
+                </h2>
+
+                <p className="mt-4 max-w-md text-sm leading-7 text-brand-dark/60">
+                  รวมคำถามเบื้องต้นที่เกี่ยวข้องกับสินค้า
+                  เพื่อช่วยตรวจสอบข้อมูลก่อนส่งรายการขอใบเสนอราคา
+                </p>
+
+                <div className="mt-6 border-l-4 border-brand-accent pl-4">
+                  <p className="text-xs leading-6 text-brand-dark/50">
+                    ตอนนี้ข้อมูล FAQ เป็น Mock Data
+                    และต้องตรวจสอบคำตอบจริงก่อนนำไปใช้บน Production
+                  </p>
+                </div>
+              </div>
+
+              <div className="border-l-2 border-t-2 border-brand-dark bg-white">
+                {product.faqs.map((faq, index) => (
+                  <details
+                    key={faq.question}
+                    className="group border-b-2 border-r-2 border-brand-dark"
+                    open={index === 0}
+                  >
+                    <summary className="flex cursor-pointer list-none items-start gap-4 px-5 py-5 sm:px-6 sm:py-6">
+                      <span className="mt-0.5 font-display text-xs font-extrabold text-brand-primary">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+
+                      <span className="flex-1 text-base font-bold leading-7 text-brand-dark">
+                        {faq.question}
+                      </span>
+
+                      <span
+                        aria-hidden="true"
+                        className="flex h-7 w-7 shrink-0 items-center justify-center border-2 border-brand-dark font-display text-lg font-bold leading-none text-brand-dark group-open:bg-brand-dark group-open:text-white"
+                      >
+                        <span className="group-open:hidden">+</span>
+                        <span className="hidden group-open:inline">−</span>
+                      </span>
+                    </summary>
+
+                    <div className="border-t-2 border-brand-dark bg-brand-light px-5 py-5 sm:px-6">
+                      <div className="grid gap-4 sm:grid-cols-[32px_1fr]">
+                        <span className="font-display text-xs font-extrabold text-brand-accent">
+                          A.
+                        </span>
+
+                        <p className="m-0 max-w-3xl text-sm leading-7 text-brand-dark/65">
+                          {faq.answer}
+                        </p>
+                      </div>
+                    </div>
+                  </details>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-white">
           <div className="mx-auto max-w-7xl px-6 py-10">
             <div className="border-l-4 border-brand-accent pl-5">
               <p className="font-display text-xs font-bold uppercase tracking-[0.18em] text-brand-primary">
@@ -606,8 +739,8 @@ export default async function ProductDetailPage({
               </p>
 
               <p className="mt-2 max-w-3xl text-sm leading-7 text-brand-dark/60">
-                FAQ และสินค้าที่เกี่ยวข้องจะพัฒนาแยกทีละ Step
-                หลังส่วน Product Documents ผ่านการตรวจสอบแล้ว
+                สินค้าที่เกี่ยวข้องจะพัฒนาเป็น Step ถัดไป
+                หลังส่วน Product FAQ ผ่านการตรวจสอบแล้ว
               </p>
             </div>
           </div>

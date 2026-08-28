@@ -3,6 +3,7 @@ import HomeCategories from "@/components/home/home-categories";
 import HomeCompanyStrength from "@/components/home/home-company-strength";
 import HomeFeaturedProducts from "@/components/home/home-featured-products";
 import HomeHero from "@/components/home/home-hero";
+import HomeNews from "@/components/home/home-news";
 import HomeProductSearch from "@/components/home/home-product-search";
 import HomeRfqCta from "@/components/home/home-rfq-cta";
 import HomeServices from "@/components/home/home-services";
@@ -23,6 +24,7 @@ export default function Home() {
         <HomeCompanyStrength />
         <HomeBrands />
         <HomeRfqCta />
+        <HomeNews />
       </main>
 
       <SiteFooter />

@@ -17,6 +17,24 @@ const products = [
     status: "พร้อมส่ง",
     category: "เครื่องมือไฟฟ้า",
     slug: "makita-clx224x1",
+    specifications: [
+      {
+        label: "ระบบแบตเตอรี่",
+        value: "12Vmax",
+      },
+      {
+        label: "ชุดเครื่องมือ",
+        value: "DF333DZ + TD110DZ",
+      },
+      {
+        label: "แบตเตอรี่",
+        value: "1.5Ah ×2",
+      },
+      {
+        label: "แท่นชาร์จ",
+        value: "DC10WD",
+      },
+    ],
   },
   {
     brand: "MAKITA",
@@ -28,6 +46,24 @@ const products = [
     status: "พร้อมส่ง",
     category: "เครื่องมือไฟฟ้า",
     slug: "makita-hr166dzx1",
+    specifications: [
+      {
+        label: "ระบบแบตเตอรี่",
+        value: "12Vmax",
+      },
+      {
+        label: "ขนาด",
+        value: "16 มม.",
+      },
+      {
+        label: "ระบบดอก",
+        value: "SDS-PLUS",
+      },
+      {
+        label: "ลักษณะงาน",
+        value: "งานเจาะคอนกรีต",
+      },
+    ],
   },
   {
     brand: "MAKITA",
@@ -39,6 +75,24 @@ const products = [
     status: "พร้อมส่ง",
     category: "เครื่องมือไฟฟ้า",
     slug: "makita-dhp485z",
+    specifications: [
+      {
+        label: "แรงบิดสูงสุด",
+        value: "50 N·m",
+      },
+      {
+        label: "ระบบไฟ",
+        value: "18V",
+      },
+      {
+        label: "ขนาดหัวจับ",
+        value: "13 มม.",
+      },
+      {
+        label: "ในกล่อง",
+        value: "ตัวเปล่า",
+      },
+    ],
   },
   {
     brand: "MAKITA",
@@ -50,6 +104,20 @@ const products = [
     status: "พร้อมส่ง",
     category: "เครื่องมือไฟฟ้า",
     slug: "makita-ga4031",
+    specifications: [
+      {
+        label: "ขนาดใบ",
+        value: "4 นิ้ว",
+      },
+      {
+        label: "ชนิดสวิตช์",
+        value: "สวิตช์โยก",
+      },
+      {
+        label: "ลักษณะงาน",
+        value: "งานเจียรและตัด",
+      },
+    ],
   },
   {
     brand: "MAKITA",
@@ -62,6 +130,20 @@ const products = [
     status: "สั่งเข้า 3–5 วัน",
     category: "เครื่องมือทำความสะอาด",
     slug: "makita-dvc750lzx1",
+    specifications: [
+      {
+        label: "ประเภท",
+        value: "เครื่องดูดฝุ่นไร้สาย",
+      },
+      {
+        label: "ระบบแบตเตอรี่",
+        value: "18V",
+      },
+      {
+        label: "ในกล่อง",
+        value: "ตัวเปล่า",
+      },
+    ],
   },
 ] as const;
 
@@ -269,6 +351,7 @@ export default async function ProductDetailPage({
                       min="1"
                       defaultValue="1"
                       inputMode="numeric"
+                      required
                       className="min-h-14 w-full border-2 border-brand-dark bg-white px-4 text-base font-bold text-brand-dark outline-none focus:border-brand-primary"
                     />
 
@@ -297,7 +380,72 @@ export default async function ProductDetailPage({
           </div>
         </section>
 
-        <section className="bg-brand-light">
+        <section className="border-b-2 border-brand-dark bg-brand-light">
+          <div className="mx-auto max-w-7xl px-6 py-12 sm:py-14 lg:py-16">
+            <div className="grid gap-8 lg:grid-cols-[0.65fr_1.35fr] lg:gap-12">
+              <div>
+                <p className="font-display text-xs font-bold uppercase tracking-[0.22em] text-brand-primary">
+                  Specifications
+                </p>
+
+                <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-brand-dark sm:text-4xl">
+                  ข้อมูลทางเทคนิค
+                </h2>
+
+                <p className="mt-4 max-w-md text-sm leading-7 text-brand-dark/60">
+                  รายละเอียดคุณสมบัติของสินค้าแต่ละรุ่น
+                  จะแตกต่างกันตามประเภทสินค้าและลักษณะการใช้งาน
+                </p>
+
+                <div className="mt-6 border-l-4 border-brand-accent pl-4">
+                  <p className="text-xs leading-6 text-brand-dark/50">
+                    ตอนนี้ข้อมูล Specification เป็น Mock Data
+                    สำหรับพัฒนาโครงสร้าง UI ก่อนเชื่อมข้อมูลจริงจาก Database
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <div className="border-l-2 border-t-2 border-brand-dark bg-white">
+                  <div className="grid border-b-2 border-r-2 border-brand-dark bg-brand-dark text-white sm:grid-cols-[0.42fr_0.58fr]">
+                    <div className="px-5 py-4 font-display text-[10px] font-bold uppercase tracking-[0.18em] text-white/60 sm:border-r-2 sm:border-white/20">
+                      Specification
+                    </div>
+
+                    <div className="px-5 py-4 font-display text-[10px] font-bold uppercase tracking-[0.18em] text-white/60">
+                      Value
+                    </div>
+                  </div>
+
+                  <dl>
+                    {product.specifications.map((specification) => (
+                      <div
+                        key={specification.label}
+                        className="grid border-b-2 border-r-2 border-brand-dark sm:grid-cols-[0.42fr_0.58fr]"
+                      >
+                        <dt className="bg-brand-light px-5 py-4 text-sm font-bold text-brand-dark sm:border-r-2 sm:border-brand-dark">
+                          {specification.label}
+                        </dt>
+
+                        <dd className="m-0 px-5 py-4 text-sm font-semibold text-brand-dark/70">
+                          {specification.value}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+
+                <p className="mt-4 text-xs leading-6 text-brand-dark/45">
+                  ข้อมูลสเปกจริงจะต้องตรวจสอบจากข้อมูลสินค้า
+                  เอกสารผู้ผลิต หรือข้อมูลที่ผู้ดูแลระบบบันทึกใน CMS
+                  ก่อนนำไปใช้บน Production
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-white">
           <div className="mx-auto max-w-7xl px-6 py-10">
             <div className="border-l-4 border-brand-accent pl-5">
               <p className="font-display text-xs font-bold uppercase tracking-[0.18em] text-brand-primary">
@@ -305,8 +453,9 @@ export default async function ProductDetailPage({
               </p>
 
               <p className="mt-2 max-w-3xl text-sm leading-7 text-brand-dark/60">
-                Specifications, เอกสารดาวน์โหลด, FAQ และสินค้าที่เกี่ยวข้อง
-                จะพัฒนาแยกทีละ Step หลัง Product Detail Foundation ผ่านแล้ว
+                คู่มือและเอกสารดาวน์โหลด, FAQ
+                และสินค้าที่เกี่ยวข้องจะพัฒนาแยกทีละ Step
+                หลังส่วน Specifications ผ่านการตรวจสอบแล้ว
               </p>
             </div>
           </div>

@@ -61,6 +61,11 @@ const products = [
           "สามารถระบุจำนวนที่ต้องการในส่วนขอใบเสนอราคาได้ โดยราคาจริงจะได้รับการยืนยันจากทีมงานในใบเสนอราคา",
       },
     ],
+    relatedSlugs: [
+      "makita-hr166dzx1",
+      "makita-dhp485z",
+      "makita-ga4031",
+    ],
   },
   {
     brand: "MAKITA",
@@ -115,6 +120,11 @@ const products = [
         answer:
           "ข้อมูลเบื้องต้นใน Mock Data ระบุไว้สำหรับงานเจาะคอนกรีต โดยรายละเอียดการใช้งานจริงควรตรวจสอบจากคู่มือและข้อมูลผู้ผลิตอีกครั้ง",
       },
+    ],
+    relatedSlugs: [
+      "makita-clx224x1",
+      "makita-dhp485z",
+      "makita-ga4031",
     ],
   },
   {
@@ -182,6 +192,11 @@ const products = [
           "ได้ สามารถระบุจำนวนในกล่อง Request for Quotation แล้วส่งต่อไปยังหน้าใบขอราคาได้",
       },
     ],
+    relatedSlugs: [
+      "makita-clx224x1",
+      "makita-hr166dzx1",
+      "makita-dvc750lzx1",
+    ],
   },
   {
     brand: "MAKITA",
@@ -232,6 +247,11 @@ const products = [
         answer:
           "ข้อมูลตัวอย่างของหน้านี้จัดไว้สำหรับงานเจียรและตัด โดยการเลือกอุปกรณ์และการใช้งานจริงควรอ้างอิงคู่มือของผู้ผลิต",
       },
+    ],
+    relatedSlugs: [
+      "makita-dhp485z",
+      "makita-clx224x1",
+      "makita-dvc750lzx1",
     ],
   },
   {
@@ -285,6 +305,11 @@ const products = [
           "ข้อมูล Mock Specification ระบุว่าเป็นตัวเปล่า รายละเอียดอุปกรณ์ที่รวมจริงต้องยืนยันอีกครั้งจากข้อมูลสินค้าและใบเสนอราคา",
       },
     ],
+    relatedSlugs: [
+      "makita-dhp485z",
+      "makita-ga4031",
+      "makita-clx224x1",
+    ],
   },
 ] as const;
 
@@ -327,6 +352,12 @@ export default async function ProductDetailPage({
   if (!product) {
     notFound();
   }
+
+  const relatedProducts = product.relatedSlugs.flatMap((relatedSlug) => {
+    const relatedProduct = getProductBySlug(relatedSlug);
+
+    return relatedProduct ? [relatedProduct] : [];
+  });
 
   return (
     <>
@@ -731,16 +762,134 @@ export default async function ProductDetailPage({
           </div>
         </section>
 
-        <section className="bg-white">
+        <section className="border-b-2 border-brand-dark bg-white">
+          <div className="mx-auto max-w-7xl px-6 py-12 sm:py-14 lg:py-16">
+            <div className="flex flex-col gap-5 border-b-2 border-brand-dark pb-6 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="font-display text-xs font-bold uppercase tracking-[0.22em] text-brand-primary">
+                  Related Products
+                </p>
+
+                <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-brand-dark sm:text-4xl">
+                  สินค้าที่เกี่ยวข้อง
+                </h2>
+
+                <p className="mt-4 max-w-2xl text-sm leading-7 text-brand-dark/60">
+                  สินค้ารุ่นอื่นที่อาจใช้ประกอบการเปรียบเทียบ
+                  หรือเลือกเพิ่มเติมสำหรับรายการขอใบเสนอราคา
+                </p>
+              </div>
+
+              <Link
+                href="/products"
+                className="inline-flex min-h-12 w-fit items-center justify-center border-2 border-brand-dark px-5 py-3 text-sm font-bold text-brand-dark transition-colors hover:bg-brand-dark hover:text-white"
+              >
+                ดูสินค้าทั้งหมด
+              </Link>
+            </div>
+
+            <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {relatedProducts.map((relatedProduct) => (
+                <article
+                  key={relatedProduct.slug}
+                  className="flex flex-col border-2 border-brand-dark bg-white"
+                >
+                  <Link
+                    href={`/products/${relatedProduct.slug}`}
+                    className="group block"
+                  >
+                    <div className="relative flex aspect-[5/3] items-center justify-center overflow-hidden border-b-2 border-brand-dark bg-brand-light px-5">
+                      <span className="font-display text-4xl font-extrabold tracking-tight text-brand-dark/10">
+                        {relatedProduct.model}
+                      </span>
+
+                      <span className="absolute left-4 top-4 bg-brand-dark px-2 py-1 font-display text-[9px] font-bold uppercase tracking-[0.16em] text-white">
+                        Product Image
+                      </span>
+
+                      <div
+                        aria-hidden="true"
+                        className="absolute bottom-0 right-0 h-10 w-10 bg-brand-accent transition-transform duration-200 group-hover:scale-125"
+                      />
+                    </div>
+                  </Link>
+
+                  <div className="flex flex-1 flex-col p-5 sm:p-6">
+                    <p className="font-display text-[10px] font-bold uppercase tracking-[0.16em] text-brand-primary">
+                      {relatedProduct.brand} · {relatedProduct.model}
+                    </p>
+
+                    <h3 className="mt-3 text-lg font-bold leading-7 text-brand-dark">
+                      <Link
+                        href={`/products/${relatedProduct.slug}`}
+                        className="transition-colors hover:text-brand-primary"
+                      >
+                        {relatedProduct.name}
+                      </Link>
+                    </h3>
+
+                    <p className="mt-3 text-sm leading-7 text-brand-dark/60">
+                      {relatedProduct.shortDescription}
+                    </p>
+
+                    <div className="mt-5">
+                      <span
+                        className={`inline-flex border px-3 py-1.5 text-xs font-bold ${getStatusClass(
+                          relatedProduct.status,
+                        )}`}
+                      >
+                        {relatedProduct.status}
+                      </span>
+                    </div>
+
+                    <p className="mt-5 border-t border-brand-dark/20 pt-4 text-xs font-semibold text-brand-dark/50">
+                      ราคาแจ้งในใบเสนอราคา
+                    </p>
+
+                    <div className="mt-auto grid gap-2 pt-5 sm:grid-cols-2">
+                      <Link
+                        href={`/products/${relatedProduct.slug}`}
+                        className="inline-flex min-h-12 items-center justify-center border-2 border-brand-dark bg-white px-4 py-3 text-center text-sm font-bold text-brand-dark transition-colors hover:bg-brand-dark hover:text-white"
+                      >
+                        ดูรายละเอียด
+                      </Link>
+
+                      <Link
+                        href={`/quote?product=${encodeURIComponent(
+                          relatedProduct.model,
+                        )}`}
+                        className="inline-flex min-h-12 items-center justify-center bg-brand-primary px-4 py-3 text-center text-sm font-bold text-white transition-opacity hover:opacity-90"
+                      >
+                        เพิ่มในใบขอราคา
+                      </Link>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+
+            <div className="mt-6 border-l-4 border-brand-accent pl-4">
+              <p className="text-xs leading-6 text-brand-dark/50">
+                ตอนนี้ความสัมพันธ์ของสินค้าเป็น Mock Data
+                และกำหนดผ่าน Related Slug ก่อนเชื่อม Product Relation
+                จาก Database ในภายหลัง
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-brand-light">
           <div className="mx-auto max-w-7xl px-6 py-10">
             <div className="border-l-4 border-brand-accent pl-5">
               <p className="font-display text-xs font-bold uppercase tracking-[0.18em] text-brand-primary">
-                Next Development
+                Product Detail
               </p>
 
               <p className="mt-2 max-w-3xl text-sm leading-7 text-brand-dark/60">
-                สินค้าที่เกี่ยวข้องจะพัฒนาเป็น Step ถัดไป
-                หลังส่วน Product FAQ ผ่านการตรวจสอบแล้ว
+                Product Detail Foundation, Specifications, Documents, FAQ
+                และ Related Products มีโครงสร้างพื้นฐานครบแล้ว
+                โดยข้อมูลทั้งหมดจะทยอยเปลี่ยนจาก Mock Data เป็น Database
+                ใน Phase ถัดไป
               </p>
             </div>
           </div>

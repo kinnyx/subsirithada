@@ -78,9 +78,17 @@ const categories = [
   },
 ] as const;
 
+const brands = [
+  {
+    name: "MAKITA",
+    slug: "makita",
+  },
+] as const;
+
 const products = [
   {
     brand: "MAKITA",
+    brandSlug: "makita",
     model: "CLX224X1",
     name: "คอมโบเซ็ต สว่านเจาะไร้สาย + ไขควงกระแทกไร้สาย",
     description:
@@ -92,6 +100,7 @@ const products = [
   },
   {
     brand: "MAKITA",
+    brandSlug: "makita",
     model: "HR166DZX1",
     name: "สว่านโรตารี่ไร้สาย 12Vmax 16 มม.",
     description: "สำหรับงานเจาะคอนกรีต · รองรับดอก SDS-PLUS",
@@ -102,6 +111,7 @@ const products = [
   },
   {
     brand: "MAKITA",
+    brandSlug: "makita",
     model: "DHP485Z",
     name: "สว่านกระแทกไร้สาย 18V 13 มม.",
     description: "แรงบิดสูงสุด 50 N·m · ตัวเปล่า",
@@ -112,6 +122,7 @@ const products = [
   },
   {
     brand: "MAKITA",
+    brandSlug: "makita",
     model: "GA4031",
     name: "เครื่องเจียร 4 นิ้ว สวิตช์โยก",
     description: "สำหรับงานเจียรและตัด · รุ่นใช้งานหนัก",
@@ -122,6 +133,7 @@ const products = [
   },
   {
     brand: "MAKITA",
+    brandSlug: "makita",
     model: "DVC750LZX1",
     name: "เครื่องดูดฝุ่นไร้สาย 18V",
     description:
@@ -136,6 +148,7 @@ const products = [
 type ProductUrlOptions = {
   query?: string;
   category?: string;
+  brand?: string;
 };
 
 function getStatusClass(status: string) {
@@ -175,6 +188,7 @@ function normalizeSearchParam(
 function buildProductsUrl({
   query = "",
   category = "",
+  brand = "",
 }: ProductUrlOptions) {
   const params = new URLSearchParams();
 
@@ -184,6 +198,10 @@ function buildProductsUrl({
 
   if (category.trim()) {
     params.set("category", category.trim());
+  }
+
+  if (brand.trim()) {
+    params.set("brand", brand.trim());
   }
 
   const queryString = params.toString();
@@ -199,6 +217,12 @@ function getCategoryProductCount(categorySlug: string) {
   ).length;
 }
 
+function getBrandProductCount(brandSlug: string) {
+  return products.filter(
+    (product) => product.brandSlug === brandSlug,
+  ).length;
+}
+
 export default async function ProductsPage({
   searchParams,
 }: PageProps<"/products">) {
@@ -206,12 +230,17 @@ export default async function ProductsPage({
 
   const rawQuery = normalizeSearchParam(params.q);
   const rawCategory = normalizeSearchParam(params.category);
+  const rawBrand = normalizeSearchParam(params.brand);
 
   const searchQuery = rawQuery.trim();
   const normalizedQuery = searchQuery.toLowerCase();
 
   const selectedCategory = categories.find(
     (category) => category.slug === rawCategory.trim(),
+  );
+
+  const selectedBrand = brands.find(
+    (brand) => brand.slug === rawBrand.trim(),
   );
 
   const filteredProducts = products.filter((product) => {
@@ -223,12 +252,17 @@ export default async function ProductsPage({
       !selectedCategory ||
       product.categorySlug === selectedCategory.slug;
 
-    return matchesSearch && matchesCategory;
+    const matchesBrand =
+      !selectedBrand ||
+      product.brandSlug === selectedBrand.slug;
+
+    return matchesSearch && matchesCategory && matchesBrand;
   });
 
   const hasSearch = searchQuery.length > 0;
   const hasCategory = Boolean(selectedCategory);
-  const hasFilters = hasSearch || hasCategory;
+  const hasBrand = Boolean(selectedBrand);
+  const hasFilters = hasSearch || hasCategory || hasBrand;
 
   return (
     <>
@@ -326,6 +360,14 @@ export default async function ProductsPage({
                 />
               )}
 
+              {selectedBrand && (
+                <input
+                  type="hidden"
+                  name="brand"
+                  value={selectedBrand.slug}
+                />
+              )}
+
               <label
                 htmlFor="product-search"
                 className="sr-only"
@@ -368,6 +410,7 @@ export default async function ProductsPage({
                     <Link
                       href={buildProductsUrl({
                         category: selectedCategory?.slug,
+                        brand: selectedBrand?.slug,
                       })}
                       aria-label="ล้างคำค้นหา"
                       className="border-l border-brand-dark px-3 py-1.5 text-xs font-bold text-brand-dark transition-colors hover:bg-brand-dark hover:text-white"
@@ -386,9 +429,29 @@ export default async function ProductsPage({
                     <Link
                       href={buildProductsUrl({
                         query: searchQuery,
+                        brand: selectedBrand?.slug,
                       })}
                       aria-label="ล้างตัวกรองหมวดหมู่"
                       className="border-l border-white/40 px-3 py-1.5 text-xs font-bold transition-colors hover:bg-white hover:text-brand-dark"
+                    >
+                      ×
+                    </Link>
+                  </div>
+                )}
+
+                {selectedBrand && (
+                  <div className="inline-flex items-center border border-brand-accent bg-brand-accent text-brand-dark">
+                    <span className="px-3 py-1.5 text-xs font-bold">
+                      แบรนด์: {selectedBrand.name}
+                    </span>
+
+                    <Link
+                      href={buildProductsUrl({
+                        query: searchQuery,
+                        category: selectedCategory?.slug,
+                      })}
+                      aria-label="ล้างตัวกรองแบรนด์"
+                      className="border-l border-brand-dark/30 px-3 py-1.5 text-xs font-bold transition-colors hover:bg-brand-dark hover:text-white"
                     >
                       ×
                     </Link>
@@ -402,104 +465,215 @@ export default async function ProductsPage({
         <section className="bg-white">
           <div className="mx-auto max-w-7xl px-6 py-12 sm:py-14 lg:py-16">
             <div className="grid gap-8 lg:grid-cols-[280px_1fr] lg:items-start">
-              <aside className="border-2 border-brand-dark bg-white">
-                <div className="border-b-2 border-brand-dark bg-brand-dark p-5 text-white">
-                  <p className="font-display text-[10px] font-bold uppercase tracking-[0.18em] text-white/50">
-                    Category Filter
-                  </p>
+              <aside className="space-y-5">
+                <section className="border-2 border-brand-dark bg-white">
+                  <div className="border-b-2 border-brand-dark bg-brand-dark p-5 text-white">
+                    <p className="font-display text-[10px] font-bold uppercase tracking-[0.18em] text-white/50">
+                      Category Filter
+                    </p>
 
-                  <h2 className="mt-2 text-xl font-bold">
-                    หมวดหมู่
-                  </h2>
-                </div>
+                    <h2 className="mt-2 text-xl font-bold">
+                      หมวดหมู่
+                    </h2>
+                  </div>
 
-                <nav
-                  aria-label="Product categories"
-                  className="grid grid-cols-2 gap-px bg-brand-dark/20 p-px lg:grid-cols-1"
-                >
-                  <Link
-                    href={buildProductsUrl({
-                      query: searchQuery,
-                    })}
-                    aria-current={
-                      !selectedCategory ? "page" : undefined
-                    }
-                    className={`flex min-h-14 items-center justify-between gap-3 px-4 py-3 text-sm transition-colors ${
-                      !selectedCategory
-                        ? "bg-brand-primary font-bold text-white"
-                        : "bg-white font-semibold text-brand-dark hover:bg-brand-light"
-                    }`}
+                  <nav
+                    aria-label="Product categories"
+                    className="grid grid-cols-2 gap-px bg-brand-dark/20 p-px lg:grid-cols-1"
                   >
-                    <span>ทั้งหมด</span>
-
-                    <span
-                      className={`font-display text-xs font-bold ${
+                    <Link
+                      href={buildProductsUrl({
+                        query: searchQuery,
+                        brand: selectedBrand?.slug,
+                      })}
+                      aria-current={
+                        !selectedCategory ? "page" : undefined
+                      }
+                      className={`flex min-h-14 items-center justify-between gap-3 px-4 py-3 text-sm transition-colors ${
                         !selectedCategory
-                          ? "text-white/70"
-                          : "text-brand-dark/35"
+                          ? "bg-brand-primary font-bold text-white"
+                          : "bg-white font-semibold text-brand-dark hover:bg-brand-light"
                       }`}
                     >
-                      {products.length}
-                    </span>
-                  </Link>
+                      <span>ทั้งหมด</span>
 
-                  {categories.map((category) => {
-                    const isActive =
-                      selectedCategory?.slug === category.slug;
-
-                    const productCount =
-                      getCategoryProductCount(category.slug);
-
-                    return (
-                      <Link
-                        key={category.slug}
-                        href={buildProductsUrl({
-                          query: searchQuery,
-                          category: category.slug,
-                        })}
-                        aria-current={
-                          isActive ? "page" : undefined
-                        }
-                        className={`flex min-h-14 items-center gap-3 px-4 py-3 text-sm transition-colors ${
-                          isActive
-                            ? "bg-brand-primary font-bold text-white"
-                            : "bg-white font-semibold text-brand-dark hover:bg-brand-light"
+                      <span
+                        className={`font-display text-xs font-bold ${
+                          !selectedCategory
+                            ? "text-white/70"
+                            : "text-brand-dark/35"
                         }`}
                       >
-                        <span
-                          className={`font-display text-[10px] font-bold ${
+                        {products.length}
+                      </span>
+                    </Link>
+
+                    {categories.map((category) => {
+                      const isActive =
+                        selectedCategory?.slug === category.slug;
+
+                      const productCount =
+                        getCategoryProductCount(category.slug);
+
+                      return (
+                        <Link
+                          key={category.slug}
+                          href={buildProductsUrl({
+                            query: searchQuery,
+                            category: category.slug,
+                            brand: selectedBrand?.slug,
+                          })}
+                          aria-current={
+                            isActive ? "page" : undefined
+                          }
+                          className={`flex min-h-14 items-center gap-3 px-4 py-3 text-sm transition-colors ${
                             isActive
-                              ? "text-white/60"
-                              : "text-brand-primary"
+                              ? "bg-brand-primary font-bold text-white"
+                              : "bg-white font-semibold text-brand-dark hover:bg-brand-light"
                           }`}
                         >
-                          {category.number}
-                        </span>
+                          <span
+                            className={`font-display text-[10px] font-bold ${
+                              isActive
+                                ? "text-white/60"
+                                : "text-brand-primary"
+                            }`}
+                          >
+                            {category.number}
+                          </span>
 
-                        <span className="min-w-0 flex-1 leading-5">
-                          {category.name}
-                        </span>
+                          <span className="min-w-0 flex-1 leading-5">
+                            {category.name}
+                          </span>
 
-                        <span
-                          className={`font-display text-xs font-bold ${
+                          <span
+                            className={`font-display text-xs font-bold ${
+                              isActive
+                                ? "text-white/70"
+                                : "text-brand-dark/35"
+                            }`}
+                          >
+                            {productCount}
+                          </span>
+                        </Link>
+                      );
+                    })}
+                  </nav>
+
+                  <div className="border-t-2 border-brand-dark bg-brand-light p-4">
+                    <p className="text-xs leading-6 text-brand-dark/50">
+                      จำนวนสินค้าในแต่ละหมวดเป็น Mock Data
+                      จาก Catalog ตัวอย่างในขั้นตอนนี้
+                    </p>
+                  </div>
+                </section>
+
+                <section className="border-2 border-brand-dark bg-white">
+                  <div className="border-b-2 border-brand-dark bg-brand-light p-5">
+                    <p className="font-display text-[10px] font-bold uppercase tracking-[0.18em] text-brand-primary">
+                      Brand Filter
+                    </p>
+
+                    <h2 className="mt-2 text-xl font-bold text-brand-dark">
+                      แบรนด์
+                    </h2>
+                  </div>
+
+                  <nav
+                    aria-label="Product brands"
+                    className="divide-y divide-brand-dark/20"
+                  >
+                    <Link
+                      href={buildProductsUrl({
+                        query: searchQuery,
+                        category: selectedCategory?.slug,
+                      })}
+                      aria-current={
+                        !selectedBrand ? "page" : undefined
+                      }
+                      className={`flex min-h-14 items-center justify-between gap-4 px-4 py-3 transition-colors ${
+                        !selectedBrand
+                          ? "bg-brand-accent font-bold text-brand-dark"
+                          : "bg-white font-semibold text-brand-dark hover:bg-brand-light"
+                      }`}
+                    >
+                      <span className="text-sm">
+                        ทุกแบรนด์
+                      </span>
+
+                      <span
+                        className={`font-display text-xs font-bold ${
+                          !selectedBrand
+                            ? "text-brand-dark/60"
+                            : "text-brand-dark/35"
+                        }`}
+                      >
+                        {products.length}
+                      </span>
+                    </Link>
+
+                    {brands.map((brand) => {
+                      const isActive =
+                        selectedBrand?.slug === brand.slug;
+
+                      const productCount =
+                        getBrandProductCount(brand.slug);
+
+                      return (
+                        <Link
+                          key={brand.slug}
+                          href={buildProductsUrl({
+                            query: searchQuery,
+                            category: selectedCategory?.slug,
+                            brand: brand.slug,
+                          })}
+                          aria-current={
+                            isActive ? "page" : undefined
+                          }
+                          className={`flex min-h-16 items-center justify-between gap-4 px-4 py-3 transition-colors ${
                             isActive
-                              ? "text-white/70"
-                              : "text-brand-dark/35"
+                              ? "bg-brand-dark text-white"
+                              : "bg-white text-brand-dark hover:bg-brand-light"
                           }`}
                         >
-                          {productCount}
-                        </span>
-                      </Link>
-                    );
-                  })}
-                </nav>
+                          <div className="flex min-w-0 items-center gap-3">
+                            <div
+                              className={`flex h-9 w-9 shrink-0 items-center justify-center border-2 font-display text-[10px] font-extrabold ${
+                                isActive
+                                  ? "border-white/40 text-white"
+                                  : "border-brand-dark text-brand-primary"
+                              }`}
+                            >
+                              {brand.name.slice(0, 2)}
+                            </div>
 
-                <div className="border-t-2 border-brand-dark bg-brand-light p-4">
-                  <p className="text-xs leading-6 text-brand-dark/50">
-                    จำนวนสินค้าในแต่ละหมวดเป็น Mock Data
-                    จาก Catalog ตัวอย่างในขั้นตอนนี้
-                  </p>
-                </div>
+                            <span className="truncate font-display text-sm font-extrabold tracking-[0.08em]">
+                              {brand.name}
+                            </span>
+                          </div>
+
+                          <span
+                            className={`font-display text-xs font-bold ${
+                              isActive
+                                ? "text-white/60"
+                                : "text-brand-dark/35"
+                            }`}
+                          >
+                            {productCount}
+                          </span>
+                        </Link>
+                      );
+                    })}
+                  </nav>
+
+                  <div className="border-t-2 border-brand-dark bg-brand-light p-4">
+                    <p className="text-xs leading-6 text-brand-dark/50">
+                      ตอนนี้ Catalog ตัวอย่างมี MAKITA เพียงแบรนด์เดียว
+                      โดย Brand จริงและสถานะ Filter Visibility
+                      จะมาจาก Database และ Brand Management ภายหลัง
+                    </p>
+                  </div>
+                </section>
               </aside>
 
               <div className="min-w-0">
@@ -512,10 +686,18 @@ export default async function ProductsPage({
                     <h2 className="mt-2 font-display text-2xl font-extrabold text-brand-dark sm:text-3xl">
                       {selectedCategory
                         ? selectedCategory.name
-                        : hasSearch
-                          ? "ผลการค้นหา"
-                          : "รายการสินค้า"}
+                        : selectedBrand
+                          ? selectedBrand.name
+                          : hasSearch
+                            ? "ผลการค้นหา"
+                            : "รายการสินค้า"}
                     </h2>
+
+                    {selectedCategory && selectedBrand && (
+                      <p className="mt-2 text-sm font-semibold text-brand-dark/50">
+                        {selectedBrand.name} · {selectedCategory.name}
+                      </p>
+                    )}
                   </div>
 
                   <div className="sm:text-right">
@@ -636,16 +818,29 @@ export default async function ProductsPage({
 
                       <p className="mt-4 max-w-2xl text-sm leading-7 text-brand-dark/60">
                         ตอนนี้ไม่มีสินค้าใน Mock Data
-                        ที่ตรงกับคำค้นหาหรือหมวดหมู่ที่เลือก
-                        ลองเปลี่ยนคำค้นหา
-                        หรือเลือกหมวดหมู่อื่น
+                        ที่ตรงกับคำค้นหา หมวดหมู่
+                        หรือแบรนด์ที่เลือก
+                        ลองเปลี่ยนเงื่อนไขแล้วค้นหาอีกครั้ง
                       </p>
 
                       <div className="mt-6 flex flex-wrap gap-3">
+                        {selectedBrand && (
+                          <Link
+                            href={buildProductsUrl({
+                              query: searchQuery,
+                              category: selectedCategory?.slug,
+                            })}
+                            className="inline-flex min-h-12 items-center justify-center border-2 border-brand-dark bg-white px-5 py-3 text-sm font-bold text-brand-dark transition-colors hover:bg-brand-dark hover:text-white"
+                          >
+                            ล้างแบรนด์
+                          </Link>
+                        )}
+
                         {selectedCategory && (
                           <Link
                             href={buildProductsUrl({
                               query: searchQuery,
+                              brand: selectedBrand?.slug,
                             })}
                             className="inline-flex min-h-12 items-center justify-center border-2 border-brand-dark bg-white px-5 py-3 text-sm font-bold text-brand-dark transition-colors hover:bg-brand-dark hover:text-white"
                           >
@@ -666,11 +861,11 @@ export default async function ProductsPage({
 
                 <div className="mt-8 border-2 border-dashed border-brand-dark/30 bg-brand-light p-5">
                   <p className="text-sm leading-7 text-brand-dark/60">
-                    ตอนนี้ข้อมูลเป็น Mock Data — Search และ Category
-                    Filter ทำงานร่วมกันผ่าน URL Query Parameter
-                    ส่วน Brand Filter, Stock Filter, Sort,
-                    Grid/List และ Pagination
-                    จะเพิ่มแยกทีละ Step
+                    ตอนนี้ข้อมูลเป็น Mock Data — Search,
+                    Category Filter และ Brand Filter
+                    ทำงานร่วมกันผ่าน URL Query Parameter
+                    ส่วน Stock Filter, Sort, Grid/List
+                    และ Pagination จะเพิ่มแยกทีละ Step
                     ก่อนเชื่อมข้อมูลจริงจาก Database
                   </p>
                 </div>

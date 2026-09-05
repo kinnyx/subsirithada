@@ -85,6 +85,29 @@ const brands = [
   },
 ] as const;
 
+const stockStatuses = [
+  {
+    name: "พร้อมส่ง",
+    slug: "ready",
+    description: "มีสินค้าและพร้อมดำเนินการตามรายการขอราคา",
+  },
+  {
+    name: "สั่งเข้า 3–5 วัน",
+    slug: "lead-time",
+    description: "สินค้าต้องใช้ระยะเวลาสั่งเข้าโดยประมาณ",
+  },
+  {
+    name: "สั่งผลิต · แจ้งกำหนด",
+    slug: "made-to-order",
+    description: "ตรวจสอบรอบการผลิตและกำหนดส่งก่อนยืนยัน",
+  },
+  {
+    name: "แจ้งยอดตามล็อต",
+    slug: "lot-quote",
+    description: "ตรวจสอบจำนวนและเงื่อนไขตามล็อตสินค้า",
+  },
+] as const;
+
 const products = [
   {
     brand: "MAKITA",
@@ -94,6 +117,7 @@ const products = [
     description:
       "DF333DZ + TD110DZ · แบตเตอรี่ 12Vmax 1.5Ah ×2 · แท่นชาร์จ DC10WD",
     status: "พร้อมส่ง",
+    statusSlug: "ready",
     slug: "makita-clx224x1",
     categoryName: "เครื่องมือไฟฟ้า",
     categorySlug: "power-tools",
@@ -105,6 +129,7 @@ const products = [
     name: "สว่านโรตารี่ไร้สาย 12Vmax 16 มม.",
     description: "สำหรับงานเจาะคอนกรีต · รองรับดอก SDS-PLUS",
     status: "พร้อมส่ง",
+    statusSlug: "ready",
     slug: "makita-hr166dzx1",
     categoryName: "เครื่องมือไฟฟ้า",
     categorySlug: "power-tools",
@@ -116,6 +141,7 @@ const products = [
     name: "สว่านกระแทกไร้สาย 18V 13 มม.",
     description: "แรงบิดสูงสุด 50 N·m · ตัวเปล่า",
     status: "พร้อมส่ง",
+    statusSlug: "ready",
     slug: "makita-dhp485z",
     categoryName: "เครื่องมือไฟฟ้า",
     categorySlug: "power-tools",
@@ -127,6 +153,7 @@ const products = [
     name: "เครื่องเจียร 4 นิ้ว สวิตช์โยก",
     description: "สำหรับงานเจียรและตัด · รุ่นใช้งานหนัก",
     status: "พร้อมส่ง",
+    statusSlug: "ready",
     slug: "makita-ga4031",
     categoryName: "เครื่องมือไฟฟ้า",
     categorySlug: "power-tools",
@@ -139,6 +166,7 @@ const products = [
     description:
       "ใช้แบตเตอรี่ร่วมกับกลุ่มเครื่องมือ MAKITA 18V · ตัวเปล่า",
     status: "สั่งเข้า 3–5 วัน",
+    statusSlug: "lead-time",
     slug: "makita-dvc750lzx1",
     categoryName: "เครื่องมือทำความสะอาด",
     categorySlug: "cleaning-tools",
@@ -149,11 +177,16 @@ type ProductUrlOptions = {
   query?: string;
   category?: string;
   brand?: string;
+  stock?: string;
 };
 
 function getStatusClass(status: string) {
   if (status === "พร้อมส่ง") {
     return "border-brand-primary bg-brand-primary text-white";
+  }
+
+  if (status === "สั่งเข้า 3–5 วัน") {
+    return "border-brand-accent bg-brand-accent text-brand-dark";
   }
 
   return "border-brand-dark bg-brand-light text-brand-dark";
@@ -189,6 +222,7 @@ function buildProductsUrl({
   query = "",
   category = "",
   brand = "",
+  stock = "",
 }: ProductUrlOptions) {
   const params = new URLSearchParams();
 
@@ -202,6 +236,10 @@ function buildProductsUrl({
 
   if (brand.trim()) {
     params.set("brand", brand.trim());
+  }
+
+  if (stock.trim()) {
+    params.set("stock", stock.trim());
   }
 
   const queryString = params.toString();
@@ -223,6 +261,12 @@ function getBrandProductCount(brandSlug: string) {
   ).length;
 }
 
+function getStockProductCount(stockSlug: string) {
+  return products.filter(
+    (product) => product.statusSlug === stockSlug,
+  ).length;
+}
+
 export default async function ProductsPage({
   searchParams,
 }: PageProps<"/products">) {
@@ -231,6 +275,7 @@ export default async function ProductsPage({
   const rawQuery = normalizeSearchParam(params.q);
   const rawCategory = normalizeSearchParam(params.category);
   const rawBrand = normalizeSearchParam(params.brand);
+  const rawStock = normalizeSearchParam(params.stock);
 
   const searchQuery = rawQuery.trim();
   const normalizedQuery = searchQuery.toLowerCase();
@@ -241,6 +286,10 @@ export default async function ProductsPage({
 
   const selectedBrand = brands.find(
     (brand) => brand.slug === rawBrand.trim(),
+  );
+
+  const selectedStock = stockStatuses.find(
+    (stock) => stock.slug === rawStock.trim(),
   );
 
   const filteredProducts = products.filter((product) => {
@@ -256,13 +305,28 @@ export default async function ProductsPage({
       !selectedBrand ||
       product.brandSlug === selectedBrand.slug;
 
-    return matchesSearch && matchesCategory && matchesBrand;
+    const matchesStock =
+      !selectedStock ||
+      product.statusSlug === selectedStock.slug;
+
+    return (
+      matchesSearch &&
+      matchesCategory &&
+      matchesBrand &&
+      matchesStock
+    );
   });
 
   const hasSearch = searchQuery.length > 0;
   const hasCategory = Boolean(selectedCategory);
   const hasBrand = Boolean(selectedBrand);
-  const hasFilters = hasSearch || hasCategory || hasBrand;
+  const hasStock = Boolean(selectedStock);
+
+  const hasFilters =
+    hasSearch ||
+    hasCategory ||
+    hasBrand ||
+    hasStock;
 
   return (
     <>
@@ -368,6 +432,14 @@ export default async function ProductsPage({
                 />
               )}
 
+              {selectedStock && (
+                <input
+                  type="hidden"
+                  name="stock"
+                  value={selectedStock.slug}
+                />
+              )}
+
               <label
                 htmlFor="product-search"
                 className="sr-only"
@@ -411,6 +483,7 @@ export default async function ProductsPage({
                       href={buildProductsUrl({
                         category: selectedCategory?.slug,
                         brand: selectedBrand?.slug,
+                        stock: selectedStock?.slug,
                       })}
                       aria-label="ล้างคำค้นหา"
                       className="border-l border-brand-dark px-3 py-1.5 text-xs font-bold text-brand-dark transition-colors hover:bg-brand-dark hover:text-white"
@@ -430,6 +503,7 @@ export default async function ProductsPage({
                       href={buildProductsUrl({
                         query: searchQuery,
                         brand: selectedBrand?.slug,
+                        stock: selectedStock?.slug,
                       })}
                       aria-label="ล้างตัวกรองหมวดหมู่"
                       className="border-l border-white/40 px-3 py-1.5 text-xs font-bold transition-colors hover:bg-white hover:text-brand-dark"
@@ -449,9 +523,30 @@ export default async function ProductsPage({
                       href={buildProductsUrl({
                         query: searchQuery,
                         category: selectedCategory?.slug,
+                        stock: selectedStock?.slug,
                       })}
                       aria-label="ล้างตัวกรองแบรนด์"
                       className="border-l border-brand-dark/30 px-3 py-1.5 text-xs font-bold transition-colors hover:bg-brand-dark hover:text-white"
+                    >
+                      ×
+                    </Link>
+                  </div>
+                )}
+
+                {selectedStock && (
+                  <div className="inline-flex items-center border border-brand-dark bg-brand-dark text-white">
+                    <span className="px-3 py-1.5 text-xs font-bold">
+                      สถานะ: {selectedStock.name}
+                    </span>
+
+                    <Link
+                      href={buildProductsUrl({
+                        query: searchQuery,
+                        category: selectedCategory?.slug,
+                        brand: selectedBrand?.slug,
+                      })}
+                      aria-label="ล้างตัวกรองสถานะสินค้า"
+                      className="border-l border-white/30 px-3 py-1.5 text-xs font-bold transition-colors hover:bg-white hover:text-brand-dark"
                     >
                       ×
                     </Link>
@@ -485,6 +580,7 @@ export default async function ProductsPage({
                       href={buildProductsUrl({
                         query: searchQuery,
                         brand: selectedBrand?.slug,
+                        stock: selectedStock?.slug,
                       })}
                       aria-current={
                         !selectedCategory ? "page" : undefined
@@ -522,6 +618,7 @@ export default async function ProductsPage({
                             query: searchQuery,
                             category: category.slug,
                             brand: selectedBrand?.slug,
+                            stock: selectedStock?.slug,
                           })}
                           aria-current={
                             isActive ? "page" : undefined
@@ -587,6 +684,7 @@ export default async function ProductsPage({
                       href={buildProductsUrl({
                         query: searchQuery,
                         category: selectedCategory?.slug,
+                        stock: selectedStock?.slug,
                       })}
                       aria-current={
                         !selectedBrand ? "page" : undefined
@@ -626,6 +724,7 @@ export default async function ProductsPage({
                             query: searchQuery,
                             category: selectedCategory?.slug,
                             brand: brand.slug,
+                            stock: selectedStock?.slug,
                           })}
                           aria-current={
                             isActive ? "page" : undefined
@@ -674,6 +773,117 @@ export default async function ProductsPage({
                     </p>
                   </div>
                 </section>
+
+                <section className="border-2 border-brand-dark bg-white">
+                  <div className="border-b-2 border-brand-dark bg-brand-light p-5">
+                    <p className="font-display text-[10px] font-bold uppercase tracking-[0.18em] text-brand-primary">
+                      Stock Filter
+                    </p>
+
+                    <h2 className="mt-2 text-xl font-bold text-brand-dark">
+                      สถานะสินค้า
+                    </h2>
+                  </div>
+
+                  <nav
+                    aria-label="Product stock statuses"
+                    className="divide-y divide-brand-dark/20"
+                  >
+                    <Link
+                      href={buildProductsUrl({
+                        query: searchQuery,
+                        category: selectedCategory?.slug,
+                        brand: selectedBrand?.slug,
+                      })}
+                      aria-current={
+                        !selectedStock ? "page" : undefined
+                      }
+                      className={`flex min-h-14 items-center justify-between gap-4 px-4 py-3 transition-colors ${
+                        !selectedStock
+                          ? "bg-brand-dark font-bold text-white"
+                          : "bg-white font-semibold text-brand-dark hover:bg-brand-light"
+                      }`}
+                    >
+                      <span className="text-sm">
+                        ทุกสถานะ
+                      </span>
+
+                      <span
+                        className={`font-display text-xs font-bold ${
+                          !selectedStock
+                            ? "text-white/60"
+                            : "text-brand-dark/35"
+                        }`}
+                      >
+                        {products.length}
+                      </span>
+                    </Link>
+
+                    {stockStatuses.map((stock) => {
+                      const isActive =
+                        selectedStock?.slug === stock.slug;
+
+                      const productCount =
+                        getStockProductCount(stock.slug);
+
+                      return (
+                        <Link
+                          key={stock.slug}
+                          href={buildProductsUrl({
+                            query: searchQuery,
+                            category: selectedCategory?.slug,
+                            brand: selectedBrand?.slug,
+                            stock: stock.slug,
+                          })}
+                          aria-current={
+                            isActive ? "page" : undefined
+                          }
+                          className={`block px-4 py-4 transition-colors ${
+                            isActive
+                              ? "bg-brand-primary text-white"
+                              : "bg-white text-brand-dark hover:bg-brand-light"
+                          }`}
+                        >
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="min-w-0">
+                              <p className="text-sm font-bold leading-6">
+                                {stock.name}
+                              </p>
+
+                              <p
+                                className={`mt-1 text-xs leading-5 ${
+                                  isActive
+                                    ? "text-white/65"
+                                    : "text-brand-dark/45"
+                                }`}
+                              >
+                                {stock.description}
+                              </p>
+                            </div>
+
+                            <span
+                              className={`shrink-0 font-display text-xs font-bold ${
+                                isActive
+                                  ? "text-white/70"
+                                  : "text-brand-dark/35"
+                              }`}
+                            >
+                              {productCount}
+                            </span>
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </nav>
+
+                  <div className="border-t-2 border-brand-dark bg-brand-light p-4">
+                    <p className="text-xs leading-6 text-brand-dark/50">
+                      Stock Status ในขั้นตอนนี้เป็น Mock Data
+                      และใช้เพื่อแสดงสถานะสำหรับการขอใบเสนอราคา
+                      ไม่ใช่ระบบขายหรือชำระเงินออนไลน์
+                    </p>
+                  </div>
+                </section>
               </aside>
 
               <div className="min-w-0">
@@ -688,14 +898,24 @@ export default async function ProductsPage({
                         ? selectedCategory.name
                         : selectedBrand
                           ? selectedBrand.name
-                          : hasSearch
-                            ? "ผลการค้นหา"
-                            : "รายการสินค้า"}
+                          : selectedStock
+                            ? selectedStock.name
+                            : hasSearch
+                              ? "ผลการค้นหา"
+                              : "รายการสินค้า"}
                     </h2>
 
-                    {selectedCategory && selectedBrand && (
+                    {(selectedCategory ||
+                      selectedBrand ||
+                      selectedStock) && (
                       <p className="mt-2 text-sm font-semibold text-brand-dark/50">
-                        {selectedBrand.name} · {selectedCategory.name}
+                        {[
+                          selectedBrand?.name,
+                          selectedCategory?.name,
+                          selectedStock?.name,
+                        ]
+                          .filter(Boolean)
+                          .join(" · ")}
                       </p>
                     )}
                   </div>
@@ -818,17 +1038,31 @@ export default async function ProductsPage({
 
                       <p className="mt-4 max-w-2xl text-sm leading-7 text-brand-dark/60">
                         ตอนนี้ไม่มีสินค้าใน Mock Data
-                        ที่ตรงกับคำค้นหา หมวดหมู่
-                        หรือแบรนด์ที่เลือก
+                        ที่ตรงกับคำค้นหา หมวดหมู่ แบรนด์
+                        หรือสถานะสินค้าที่เลือก
                         ลองเปลี่ยนเงื่อนไขแล้วค้นหาอีกครั้ง
                       </p>
 
                       <div className="mt-6 flex flex-wrap gap-3">
+                        {selectedStock && (
+                          <Link
+                            href={buildProductsUrl({
+                              query: searchQuery,
+                              category: selectedCategory?.slug,
+                              brand: selectedBrand?.slug,
+                            })}
+                            className="inline-flex min-h-12 items-center justify-center border-2 border-brand-dark bg-white px-5 py-3 text-sm font-bold text-brand-dark transition-colors hover:bg-brand-dark hover:text-white"
+                          >
+                            ล้างสถานะ
+                          </Link>
+                        )}
+
                         {selectedBrand && (
                           <Link
                             href={buildProductsUrl({
                               query: searchQuery,
                               category: selectedCategory?.slug,
+                              stock: selectedStock?.slug,
                             })}
                             className="inline-flex min-h-12 items-center justify-center border-2 border-brand-dark bg-white px-5 py-3 text-sm font-bold text-brand-dark transition-colors hover:bg-brand-dark hover:text-white"
                           >
@@ -841,6 +1075,7 @@ export default async function ProductsPage({
                             href={buildProductsUrl({
                               query: searchQuery,
                               brand: selectedBrand?.slug,
+                              stock: selectedStock?.slug,
                             })}
                             className="inline-flex min-h-12 items-center justify-center border-2 border-brand-dark bg-white px-5 py-3 text-sm font-bold text-brand-dark transition-colors hover:bg-brand-dark hover:text-white"
                           >
@@ -862,10 +1097,10 @@ export default async function ProductsPage({
                 <div className="mt-8 border-2 border-dashed border-brand-dark/30 bg-brand-light p-5">
                   <p className="text-sm leading-7 text-brand-dark/60">
                     ตอนนี้ข้อมูลเป็น Mock Data — Search,
-                    Category Filter และ Brand Filter
+                    Category Filter, Brand Filter และ Stock Filter
                     ทำงานร่วมกันผ่าน URL Query Parameter
-                    ส่วน Stock Filter, Sort, Grid/List
-                    และ Pagination จะเพิ่มแยกทีละ Step
+                    ส่วน Sort, Grid/List และ Pagination
+                    จะเพิ่มแยกทีละ Step
                     ก่อนเชื่อมข้อมูลจริงจาก Database
                   </p>
                 </div>
